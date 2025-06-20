@@ -35,6 +35,14 @@ public class User {
     @JsonIgnore // Never serialize password in JSON responses
     private String passwordHash;
 
+    // Add this field to User.java entity
+    @Column(name = "original_password")
+    private String originalPassword;
+
+    public String getOriginalPassword() { return originalPassword; }
+    public void setOriginalPassword(String originalPassword) { this.originalPassword = originalPassword; }
+
+
     @Column(name = "email", unique = true, length = 100)
     @Email(message = "Please provide a valid email address")
     @Size(max = 100, message = "Email cannot exceed 100 characters")
@@ -144,6 +152,19 @@ public class User {
         this.email = email;
         this.phone = phone;
         this.passwordChangedAt = LocalDateTime.now();
+
+        // Set default values to avoid validation issues
+        this.emailVerified = false;
+        this.phoneVerified = false;
+        this.accountActive = false;
+        this.accountLocked = false;
+        this.failedLoginAttempts = 0;
+        this.emailVerificationAttempts = 0;
+        this.phoneVerificationAttempts = 0;
+        this.role = UserRole.USER;
+        this.status = AccountStatus.PENDING_VERIFICATION;
+        this.timezone = "UTC";
+        this.language = "en";
     }
 
     // Getters and Setters
@@ -183,6 +204,20 @@ public class User {
             this.phoneCodeExpiry = null;
             this.phoneVerificationAttempts = 0;
         }
+    }
+
+    // Add this method for debugging
+    public boolean isValidForSave() {
+        if (username == null || username.trim().isEmpty()) {
+            System.out.println("DEBUG: Username is null or empty");
+            return false;
+        }
+        if (passwordHash == null || passwordHash.trim().isEmpty()) {
+            System.out.println("DEBUG: Password hash is null or empty");
+            return false;
+        }
+        System.out.println("DEBUG: User validation passed - username: " + username + ", passwordHash length: " + passwordHash.length());
+        return true;
     }
 
     public boolean isAccountActive() { return accountActive; }
@@ -377,6 +412,8 @@ public class User {
     public int hashCode() {
         return Objects.hash(id, username);
     }
+
+
 
     // Enums
     public enum UserRole {

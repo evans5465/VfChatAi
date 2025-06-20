@@ -493,6 +493,8 @@
             }
         }
     </style>
+    <!-- Add this to the <head> section of your index.html -->
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVFiFtZdNiE1hGMd/78ydO2PGjC/JQkorG18Lshn5WCnZsJGyIBsLZSeUhbKwsLBTSilKKVkoJQsLJR8bJVkoJR8pHz+/xTnPnTPnPue8971z3/rXe9/3ef7P//k/z/u+z3sVEUGSJK1fvz5dsmRJ2tLSkvb29hqADRs2pIsWLUqNMRpQSmml1OuIiO/fv8fv37+PFy9exE+fPsWPHz/GR48exadPn8a7d+/GW7duxRs3bsTr16/Ha9euxStXrsTLly/HS5cuxQsXLsQLFy7E8+fPx3PnzsVz587FM2fOxDNnzsTTp0/HU6dOxZMnT8YTJ07E48ePx2PHjsWjR4/GI0eOxMOHD8dDhw7FgwcPxgMHDsT9+/fHffv2xb1798Y9e/bE3bt3x127dsWdO3fGHTt2xO3bt8dt27bFrVu3xi1btsStW7fGzZs3x02bNsWNGzfGDRs2xPXr18d169bFtWvXxjVr1sRVq1bFlStXxhUrVsTly5fHZcuWxaVLl8YlS5bExYsXx4ULF8YFCxbE+fPnx3nz5sW5c+fGOXPmxNmzZ8dZs2bFmTNnxhkzZsTp06fHadOmxalTp8YpU6bEyZMnx0mTJsWJEyfGCRMmxPHjx8dx48bFsWPHxjFjxsTRo0fHUaNGxZEjR8YRI0bE4cOHx2HDhsWhQ4fGIUOGxMGDB8dBgwbFgQMHxgEDBsT+/fvHfv36xb59+8Y+ffrE3r17x169esWePXvGHj16xO7du8du3brFrl27xi5dusQuXbrEzp07x06dOsUOHTrE9u3bx3bt2sW2bdvGNm3axNatW8dWrVrFli1bxhYtWsTmzZvHZs2axaZNm8YmTZrExo0bx0aNGsWGDRvGBg0axPr168d69erFunXrxjp16sTatWvHWrVqxZo1a8YaNWrE6tWrx2rVqsWqVavGKlWqxMqVK8dKlSrFihUrxgoVKsTy5cvHcuXKxbJly8ayZcvGMmXKxNKlS8fSpUvHUqVKxZIlS8YSJUrE4sWLx2LFisWiRYvGIkWKxMKFC8dChQrFggULxgIFCsT8+fPHfPnyxbx588a8efPGPHnyxNy5c8fcuXPHXLlyxZw5c8acOXPGHDlyxOzZs8fs2bPHbNmyxaxZs8asWbPGrFmzxixZssQsWbLEzJkzx8yZM8dMmTLFTJkyxYwZM8aMGTPGDBkyxPTp08f06dPHdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sV06dLFdOnSxXTp0sX8A7+DnI/2zw3/AAAAAElFTkSuQmCC">
 </head>
 <body>
 <div class="container">
@@ -787,7 +789,23 @@
 
     function showResult(elementId, message, isSuccess = true) {
         const element = document.getElementById(elementId);
-        element.innerHTML = message;
+
+        // Clean up the message if it contains JSON
+        let cleanMessage = message;
+        if (typeof message === 'string' && message.includes('"success"')) {
+            try {
+                const jsonMatch = message.match(/\{.*\}/);
+                if (jsonMatch) {
+                    const jsonData = JSON.parse(jsonMatch[0]);
+                    cleanMessage = jsonData.message || message;
+                }
+            } catch (e) {
+                // If parsing fails, use original message
+                cleanMessage = message;
+            }
+        }
+
+        element.innerHTML = cleanMessage;
         element.className = `result ${isSuccess ? 'success' : 'error'}`;
         element.style.display = 'block';
 
@@ -796,16 +814,26 @@
         }, 5000);
     }
 
-    // Registration
     function registerUser() {
         const username = document.getElementById('regUsername').value.trim();
         const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value;
+        const password = document.getElementById('regPassword').value; // Don't trim password!
         const fullPhone = getFullPhoneNumber();
 
-        // Validation
-        if (!username || !password) {
-            showResult('regResult', 'Username and password are required!', false);
+        console.log('Registration form data:');
+        console.log('  Username:', username);
+        console.log('  Email:', email);
+        console.log('  Password length:', password ? password.length : 0);
+        console.log('  Phone:', fullPhone);
+
+        // Enhanced validation
+        if (!username) {
+            showResult('regResult', 'Username is required!', false);
+            return;
+        }
+
+        if (!password) {
+            showResult('regResult', 'Password is required!', false);
             return;
         }
 
@@ -841,22 +869,46 @@
         button.innerHTML = '<div class="loading"></div> Registering...';
         button.disabled = true;
 
-        const formData = `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&email=${encodeURIComponent(email || '')}&phone=${encodeURIComponent(fullPhone || '')}`;
+        // Create form data manually to ensure proper encoding
+        const params = new URLSearchParams();
+        params.append('username', username);
+        params.append('password', password);
+
+        // Only append email and phone if they have values
+        if (email) {
+            params.append('email', email);
+        }
+        if (fullPhone) {
+            params.append('phone', fullPhone);
+        }
+
+        console.log('Sending form data:', params.toString());
 
         fetch('/api/auth/register', {
             method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: formData
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params
         })
-            .then(response => response.text())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.text().then(text => {
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('Response is not JSON:', text);
+                        throw new Error('Server returned non-JSON response: ' + text);
+                    }
+                });
+            })
             .then(data => {
+                console.log('Response data:', data);
                 button.innerHTML = originalText;
                 button.disabled = false;
 
-                const isSuccess = data.includes('successfully');
-                showResult('regResult', data, isSuccess);
-
-                if (isSuccess) {
+                if (data.success) {
+                    showResult('regResult', data.message, true);
                     // Clear form
                     document.getElementById('regUsername').value = '';
                     document.getElementById('regEmail').value = '';
@@ -865,15 +917,20 @@
                     document.getElementById('regCountry').value = '';
                     updateCountryCode();
 
-                    // Show verification choice
-                    showVerificationChoice(username, email, fullPhone);
+                    // Show verification choice if user data is available
+                    if (data.data && data.data.username) {
+                        showVerificationChoice(data.data.username, email, fullPhone);
+                    }
                     getAllUsers();
+                } else {
+                    showResult('regResult', data.message || 'Registration failed', false);
                 }
             })
             .catch(error => {
+                console.error('Registration error:', error);
                 button.innerHTML = originalText;
                 button.disabled = false;
-                showResult('regResult', 'Error: ' + error, false);
+                showResult('regResult', 'Error: ' + error.message, false);
             });
     }
 
@@ -900,7 +957,6 @@
         document.getElementById('verificationChoiceSection').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Select verification method
     function selectVerificationMethod(method) {
         selectedVerificationMethod = method;
 
@@ -919,20 +975,20 @@
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `username=${encodeURIComponent(currentUser)}&method=${method}`
         })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
                 button.innerHTML = originalContent;
 
-                if (data.includes('sent')) {
+                if (data.success) {
                     showVerificationForm(method);
-                    showResult('choiceResult', data, true);
+                    showResult('choiceResult', data.message, true);
                 } else {
-                    showResult('choiceResult', data, false);
+                    showResult('choiceResult', data.message, false);
                 }
             })
             .catch(error => {
                 button.innerHTML = originalContent;
-                showResult('choiceResult', 'Error: ' + error, false);
+                showResult('choiceResult', 'Error: ' + error.message, false);
             });
     }
 
@@ -951,7 +1007,8 @@
         document.getElementById('verificationCode').focus();
     }
 
-    // Submit verification code
+    // Replace the submitVerificationCode function in your index.html
+
     function submitVerificationCode() {
         const code = document.getElementById('verificationCode').value.trim();
 
@@ -972,28 +1029,32 @@
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `username=${encodeURIComponent(currentUser)}&code=${encodeURIComponent(code)}`
         })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
                 button.innerHTML = originalText;
                 button.disabled = false;
 
-                if (data.includes('verified') && data.includes('active')) {
-                    showVerificationStatus('verified', data);
+                if (data.success) {
+                    // Extract clean message from data
+                    let cleanMessage = data.message;
+                    if (data.data && data.data.message) {
+                        cleanMessage = data.data.message;
+                    }
+
+                    showVerificationStatus('verified', cleanMessage);
                     setTimeout(() => {
-                        alert('🎉 Account verified and activated! You can now login.');
+                        alert('🎉 ' + cleanMessage);
                         hideVerificationChoice();
                         getAllUsers();
                     }, 2000);
-                } else if (data.includes('verified')) {
-                    showVerificationStatus('verified', data);
                 } else {
-                    showVerificationStatus('error', data);
+                    showVerificationStatus('error', data.message);
                 }
             })
             .catch(error => {
                 button.innerHTML = originalText;
                 button.disabled = false;
-                showVerificationStatus('error', 'Error: ' + error);
+                showVerificationStatus('error', 'Error: ' + error.message);
             });
     }
 
@@ -1062,10 +1123,11 @@
         userPhone = '';
     }
 
-    // Login User
     function loginUser() {
-        const username = document.getElementById('loginUsername').value;
+        const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value;
+
+        console.log('Login attempt:', { username, passwordLength: password ? password.length : 0 });
 
         if (!username || !password) {
             showResult('loginResult', 'Please fill in all fields!', false);
@@ -1077,28 +1139,43 @@
         button.innerHTML = '<div class="loading"></div> Logging in...';
         button.disabled = true;
 
+        // Create form data with correct parameter names
+        const params = new URLSearchParams();
+        params.append('identifier', username);  // Backend expects 'identifier'
+        params.append('password', password);
+
+        console.log('Sending login data:', params.toString());
+
         fetch('/api/auth/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+            body: params
         })
-            .then(response => response.text())
+            .then(response => {
+                console.log('Login response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Login response data:', data);
                 button.innerHTML = originalText;
                 button.disabled = false;
 
-                const isSuccess = data.includes('successfully');
-                showResult('loginResult', data, isSuccess);
-
-                if (isSuccess) {
+                if (data.success) {
+                    showResult('loginResult', data.message, true);
                     document.getElementById('loginUsername').value = '';
                     document.getElementById('loginPassword').value = '';
+
+                    // Show success message
+                    alert('✅ Login successful! Welcome ' + data.data.user.username);
+                } else {
+                    showResult('loginResult', data.message, false);
                 }
             })
             .catch(error => {
+                console.error('Login error:', error);
                 button.innerHTML = originalText;
                 button.disabled = false;
-                showResult('loginResult', 'Error: ' + error, false);
+                showResult('loginResult', 'Error: ' + error.message, false);
             });
     }
 
@@ -1172,75 +1249,132 @@
         showResult('recoveryResult', 'SMS recovery feature coming soon!', true);
     }
 
-    // Get All Users
+    // Replace the getAllUsers function in index.html
     function getAllUsers() {
         fetch('/api/auth/users')
             .then(response => response.json())
-            .then(data => {
+            .then(response => {
+                let users = [];
+
+                if (response.success && response.data) {
+                    users = response.data;
+                } else if (Array.isArray(response)) {
+                    users = response;
+                }
+
                 let html = '';
-                if (data.length === 0) {
+                if (users.length === 0) {
                     html = '<p style="text-align: center; color: var(--text-muted);">No users found.</p>';
                 } else {
-                    data.forEach((user, index) => {
+                    users.forEach((user, index) => {
+                        const verificationButton = !user.accountActive ?
+                            `<button class="btn btn-secondary" onclick="startVerification('${user.username}', '${user.email}', '${user.phone}')" style="margin-right: 10px;">
+                            🔄 Verify Account
+                        </button>` : '';
+
                         html += `
-                            <div class="user-item" style="animation-delay: ${index * 0.1}s">
-                                <div class="user-info">
-                                    <div class="user-detail">
-                                        <strong>ID:</strong> <span>${user.id}</span>
-                                    </div>
-                                    <div class="user-detail">
-                                        <strong>Username:</strong> <span>${user.name}</span>
-                                    </div>
-                                    <div class="user-detail">
-                                        <strong>Email:</strong> <span>${user.email || 'Not provided'}</span>
-                                        <span style="margin-left: 10px;">
-                                            ${user.emailVerified ? '✅ Verified' : '❌ Not verified'}
-                                        </span>
-                                    </div>
-                                    <div class="user-detail">
-                                        <strong>Phone:</strong> <span>${user.phone || 'Not provided'}</span>
-                                        <span style="margin-left: 10px;">
-                                            ${user.phoneVerified ? '✅ Verified' : '❌ Not verified'}
-                                        </span>
-                                    </div>
-                                    <div class="user-detail">
-                                        <strong>Account:</strong>
-                                        <span style="color: ${user.accountActive ? 'var(--success-color)' : 'var(--warning-color)'}; font-weight: bold;">
-                                            ${user.accountActive ? '🟢 Active' : '🟡 Pending Verification'}
-                                        </span>
-                                    </div>
-                                    <div class="user-detail">
-                                        <strong>Password:</strong>
-                                        <span id="pwd-${user.id}" style="font-family: monospace;">••••••••</span>
-                                        <button class="password-toggle" onclick="togglePassword(${user.id}, '${user.password}')">
-                                            👁️ Show
-                                        </button>
-                                    </div>
+                        <div class="user-item" style="animation-delay: ${index * 0.1}s">
+                            <div class="user-info">
+                                <div class="user-detail">
+                                    <strong>ID:</strong> <span>${user.id}</span>
                                 </div>
-                                <button class="btn btn-danger" onclick="quickDelete('${user.name}')">
+                                <div class="user-detail">
+                                    <strong>Username:</strong> <span>${user.name || user.username}</span>
+                                </div>
+                                <div class="user-detail">
+                                    <strong>Email:</strong> <span>${user.email || 'Not provided'}</span>
+                                    <span style="margin-left: 10px;">
+                                        ${user.emailVerified ? '✅ Verified' : '❌ Not verified'}
+                                    </span>
+                                </div>
+                                <div class="user-detail">
+                                    <strong>Phone:</strong> <span>${user.phone || 'Not provided'}</span>
+                                    <span style="margin-left: 10px;">
+                                        ${user.phoneVerified ? '✅ Verified' : '❌ Not verified'}
+                                    </span>
+                                </div>
+                                <div class="user-detail">
+                                    <strong>Account:</strong>
+                                    <span style="color: ${user.accountActive ? 'var(--success-color)' : 'var(--warning-color)'}; font-weight: bold;">
+                                        ${user.accountActive ? '🟢 Active' : '🟡 Pending Verification'}
+                                    </span>
+                                </div>
+                                <div class="user-detail">
+                                    <strong>Password:</strong>
+                                    <span id="pwd-${user.id}" style="font-family: monospace;">••••••••</span>
+                                    <button class="password-toggle" onclick="togglePassword(${user.id}, '${user.password || 'NoPassword'}')">
+                                        👁️ Show
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                ${verificationButton}
+                                <button class="btn btn-danger" onclick="deleteUserByUsername('${user.username}')">
                                     🗑️ Delete
                                 </button>
                             </div>
-                        `;
+                        </div>
+                    `;
                     });
                 }
                 document.getElementById('usersResult').innerHTML = html;
             })
             .catch(error => {
+                console.error('Error loading users:', error);
                 document.getElementById('usersResult').innerHTML =
-                    `<p style="color: var(--danger-color);">Error loading users: ${error}</p>`;
+                    `<p style="color: var(--danger-color);">Error loading users: ${error.message}</p>`;
             });
     }
 
-    // Toggle password visibility
+    function deleteUserByUsername(username) {
+        const password = prompt(`Enter password for user "${username}" to delete:`);
+        if (!password) return;
+
+        if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+            return;
+        }
+
+        const params = new URLSearchParams();
+        params.append('identifier', username);
+        params.append('password', password);
+
+        fetch('/api/auth/delete', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: params
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    getAllUsers();
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('❌ Error: ' + error.message);
+            });
+    }
+
+    // Add startVerification function
+    function startVerification(username, email, phone) {
+        currentUser = username;
+        userEmail = email;
+        userPhone = phone;
+        showVerificationChoice(username, email, phone);
+    }
+
     function togglePassword(userId, actualPassword) {
         const pwdElement = document.getElementById(`pwd-${userId}`);
         const button = event.target;
 
         if (pwdElement.textContent === '••••••••') {
+            // Show the real password
             pwdElement.textContent = actualPassword;
             button.innerHTML = '🙈 Hide';
         } else {
+            // Hide the password
             pwdElement.textContent = '••••••••';
             button.innerHTML = '👁️ Show';
         }

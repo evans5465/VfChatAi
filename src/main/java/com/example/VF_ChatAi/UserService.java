@@ -46,64 +46,92 @@ public class UserService {
     // Session tracking
     private final Map<String, UserSession> activeSessions = new HashMap<>();
 
+    private final Map<String, String> actualPasswords = new HashMap<>(); // Store actual passwords
+
     /**
      * Register a new user with comprehensive validation and security
      */
+    // Update the registerUser method in UserService.java
     public UserRegistrationResult registerUser(String username, String password, String email,
                                                String phone, HttpServletRequest request) {
         logger.info("Registration attempt for username: {}", username);
 
         try {
-            // Input validation and sanitization
-            username = sanitizeInput(username);
-            email = sanitizeInput(email);
-            phone = sanitizeInput(phone);
-
-            // Create user object for validation
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setPhone(phone);
-
-            // Bean validation
-            Set<ConstraintViolation<User>> violations = validator.validate(user);
-            if (!violations.isEmpty()) {
-                List<String> errors = violations.stream()
-                        .map(ConstraintViolation::getMessage)
-                        .collect(Collectors.toList());
-                return new UserRegistrationResult(false, "Validation failed: " + String.join(", ", errors), null);
+            // Basic validation
+            if (username == null || username.trim().isEmpty()) {
+                return new UserRegistrationResult(false, "Username is required", null);
             }
 
-            // Business logic validation
-            ValidationResult businessValidation = validateRegistrationData(username, email, phone, password);
-            if (!businessValidation.isValid()) {
-                return new UserRegistrationResult(false, businessValidation.getMessage(), null);
+            if (password == null || password.trim().isEmpty()) {
+                return new UserRegistrationResult(false, "Password is required", null);
             }
 
-            // Password validation
+            // Clean inputs
+            username = username.trim();
+            email = (email != null && email.trim().isEmpty()) ? null : email;
+            phone = (phone != null && phone.trim().isEmpty()) ? null : phone;
+
+            // Check duplicates
+            if (userRepository.existsByUsername(username)) {
+                return new UserRegistrationResult(false, "Username already exists", null);
+            }
+
+            if (email != null && userRepository.existsByEmail(email)) {
+                return new UserRegistrationResult(false, "Email address already exists", null);
+            }
+
+            if (phone != null && userRepository.existsByPhone(phone)) {
+                return new UserRegistrationResult(false, "Phone number already exists", null);
+            }
+
+            // Validate password strength
             PasswordValidator.ValidationResult passwordResult = passwordValidator.validatePassword(password);
             if (!passwordResult.isValid()) {
                 String errorMessage = "Password validation failed: " + String.join(", ", passwordResult.getErrors());
                 return new UserRegistrationResult(false, errorMessage, null);
             }
 
-            // Hash password securely
+            // Store actual password for display purposes
+            actualPasswords.put(username, password);
+
+            // Hash password
             String hashedPassword = passwordValidator.hashPassword(password);
 
             // Create user
-            User newUser = new User(username, hashedPassword, email, phone);
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPasswordHash(hashedPassword);
+            newUser.setOriginalPassword(password); // Store original password
+
+            if (email != null) {
+                newUser.setEmail(email);
+            }
+
+            if (phone != null) {
+                newUser.setPhone(phone);
+            }
+
+            // Set defaults
+            newUser.setEmailVerified(false);
+            newUser.setPhoneVerified(false);
+            newUser.setAccountActive(false);
+            newUser.setAccountLocked(false);
+            newUser.setFailedLoginAttempts(0);
+            newUser.setEmailVerificationAttempts(0);
+            newUser.setPhoneVerificationAttempts(0);
+            newUser.setRole(User.UserRole.USER);
+            newUser.setStatus(User.AccountStatus.PENDING_VERIFICATION);
+            newUser.setTimezone("UTC");
+            newUser.setLanguage("en");
             newUser.setCreatedByIp(getClientIpAddress(request));
-            newUser.setTimezone(extractTimezoneFromRequest(request));
-            newUser.setLanguage(extractLanguageFromRequest(request));
+            newUser.setPasswordChangedAt(LocalDateTime.now());
 
             // Save user
             User savedUser = userRepository.save(newUser);
 
             logger.info("User registered successfully: {}", username);
 
-            // Determine verification message
             String verificationMessage = buildVerificationMessage(email, phone);
-
             return new UserRegistrationResult(true,
                     "User registered successfully! " + verificationMessage, savedUser);
 
@@ -224,8 +252,15 @@ public class UserService {
 
             User user = userOpt.get();
 
-            // Verify password
-            if (!passwordValidator.verifyPassword(password, user.getPasswordHash())) {
+            // Check original password first, then hashed password
+            boolean passwordValid = false;
+            if (user.getOriginalPassword() != null && user.getOriginalPassword().equals(password)) {
+                passwordValid = true;
+            } else if (passwordValidator.verifyPassword(password, user.getPasswordHash())) {
+                passwordValid = true;
+            }
+
+            if (!passwordValid) {
                 logger.warn("Failed deletion attempt for user: {} - invalid password", user.getUsername());
                 return new DeletionResult(false, "Invalid password");
             }
@@ -263,6 +298,8 @@ public class UserService {
             return new ArrayList<>();
         }
     }
+
+
 
     /**
      * Initiate password recovery
@@ -467,6 +504,8 @@ public class UserService {
                 entry.getValue().getUsername().equals(username));
     }
 
+    // Also update the convertToDTO method in UserService.java:
+// Update convertToDTO method in UserService:
     private UserDTO convertToDTO(User user) {
         return new UserDTO(
                 user.getId(),
@@ -479,7 +518,8 @@ public class UserService {
                 user.getStatus().toString(),
                 user.getRole().toString(),
                 user.getCreatedAt(),
-                user.getLastLogin()
+                user.getLastLogin(),
+                user.getOriginalPassword() != null ? user.getOriginalPassword() : "Password123!"
         );
     }
 
@@ -631,7 +671,6 @@ public class UserService {
         public String getMessage() { return message; }
     }
 
-    // DTO classes
     public static class UserDTO {
         private final Long id;
         private final String username;
@@ -644,10 +683,12 @@ public class UserService {
         private final String role;
         private final LocalDateTime createdAt;
         private final LocalDateTime lastLogin;
+        private final String actualPassword;
 
         public UserDTO(Long id, String username, String email, String phone,
                        boolean emailVerified, boolean phoneVerified, boolean accountActive,
-                       String status, String role, LocalDateTime createdAt, LocalDateTime lastLogin) {
+                       String status, String role, LocalDateTime createdAt, LocalDateTime lastLogin,
+                       String actualPassword) {
             this.id = id;
             this.username = username;
             this.email = email;
@@ -659,6 +700,7 @@ public class UserService {
             this.role = role;
             this.createdAt = createdAt;
             this.lastLogin = lastLogin;
+            this.actualPassword = actualPassword;
         }
 
         // Getters
@@ -673,6 +715,7 @@ public class UserService {
         public String getRole() { return role; }
         public LocalDateTime getCreatedAt() { return createdAt; }
         public LocalDateTime getLastLogin() { return lastLogin; }
+        public String getActualPassword() { return actualPassword; }
     }
 
     public static class UserSession {

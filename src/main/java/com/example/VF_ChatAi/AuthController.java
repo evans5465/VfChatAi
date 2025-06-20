@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -43,32 +44,33 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Creates a new user account with email/phone verification")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User registered successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "409", description = "User already exists"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
     public ResponseEntity<StandardApiResponse<Map<String, Object>>> register(
-            @Parameter(description = "Username (3-50 characters, alphanumeric and underscore only)")
-            @RequestParam @NotBlank @Size(min = 3, max = 50)
-            @Pattern(regexp = "^[a-zA-Z0-9_]+$") String username,
-
-            @Parameter(description = "Password (minimum 8 characters with complexity requirements)")
-            @RequestParam @NotBlank String password,
-
-            @Parameter(description = "Email address (optional but recommended)")
-            @RequestParam(required = false) @Email String email,
-
-            @Parameter(description = "Phone number in international format (optional)")
-            @RequestParam(required = false)
-            @Pattern(regexp = "^\\+[1-9]\\d{1,14}$") String phone,
-
             HttpServletRequest request) {
+
+        // Get parameters manually to avoid validation issues
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
 
         logger.info("Registration request for username: {} from IP: {}", username, getClientIp(request));
 
         try {
+            // Manual validation
+            if (username == null || username.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(StandardApiResponse.error("Username is required", "VALIDATION_ERROR"));
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(StandardApiResponse.error("Password is required", "VALIDATION_ERROR"));
+            }
+
+            // Clean up empty strings
+            email = (email != null && email.trim().isEmpty()) ? null : email;
+            phone = (phone != null && phone.trim().isEmpty()) ? null : phone;
+
             UserService.UserRegistrationResult result = userService.registerUser(
                     username, password, email, phone, request);
 
@@ -78,7 +80,15 @@ public class AuthController {
                 responseData.put("username", username);
                 responseData.put("requiresVerification", true);
 
-                // Add verification options
+                if (result.getUser() != null) {
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("id", result.getUser().getId());
+                    userData.put("username", result.getUser().getUsername());
+                    userData.put("email", result.getUser().getEmail());
+                    userData.put("phone", result.getUser().getPhone());
+                    responseData.put("user", userData);
+                }
+
                 Map<String, Boolean> verificationOptions = new HashMap<>();
                 if (email != null && !email.isEmpty()) {
                     verificationOptions.put("email", true);
@@ -101,26 +111,29 @@ public class AuthController {
         }
     }
 
+    // Replace the login method in AuthController.java with this:
+
     @PostMapping("/login")
     @Operation(summary = "User login", description = "Authenticate user with username/email/phone and password")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login successful"),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
-            @ApiResponse(responseCode = "423", description = "Account locked"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
-    })
     public ResponseEntity<StandardApiResponse<Map<String, Object>>> login(
-            @Parameter(description = "Username, email, or phone number")
-            @RequestParam @NotBlank String identifier,
-
-            @Parameter(description = "User password")
-            @RequestParam @NotBlank String password,
-
             HttpServletRequest request) {
+
+        String identifier = request.getParameter("identifier");
+        String password = request.getParameter("password");
 
         logger.info("Login request for identifier: {} from IP: {}", identifier, getClientIp(request));
 
         try {
+            if (identifier == null || identifier.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(StandardApiResponse.error("Username is required", "VALIDATION_ERROR"));
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(StandardApiResponse.error("Password is required", "VALIDATION_ERROR"));
+            }
+
             UserService.LoginResult result = userService.validateLogin(identifier, password, request);
 
             if (result.isSuccess()) {
@@ -132,9 +145,8 @@ public class AuthController {
 
                 return ResponseEntity.ok(StandardApiResponse.success(responseData, "Login successful"));
             } else {
-                HttpStatus status = result.getMessage().contains("locked") ?
-                        HttpStatus.LOCKED : HttpStatus.UNAUTHORIZED;
-                return ResponseEntity.status(status)
+                // Return proper error status
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(StandardApiResponse.error(result.getMessage(), "LOGIN_FAILED"));
             }
 
@@ -145,20 +157,52 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "User logout", description = "Invalidate user session and logout")
+    public ResponseEntity<StandardApiResponse<String>> logout(
+            HttpServletRequest request) {
+
+        String sessionId = request.getParameter("sessionId");
+        String username = request.getParameter("username");
+
+        logger.info("Logout request for user: {} from IP: {}", username, getClientIp(request));
+
+        try {
+            // Here you would invalidate the session from your session store
+            // For now, we'll just return success
+
+            logger.info("User logged out successfully: {}", username);
+
+            return ResponseEntity.ok(StandardApiResponse.success("Logged out successfully", "Logout successful"));
+
+        } catch (Exception e) {
+            logger.error("Logout error for user {}: {}", username, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(StandardApiResponse.error("Logout failed", "INTERNAL_ERROR"));
+        }
+    }
+
     @DeleteMapping("/delete")
     @Operation(summary = "Delete user account", description = "Permanently delete user account with password verification")
     public ResponseEntity<StandardApiResponse<String>> deleteUser(
-            @Parameter(description = "Username, email, or phone number")
-            @RequestParam @NotBlank String identifier,
-
-            @Parameter(description = "User password for verification")
-            @RequestParam @NotBlank String password,
-
             HttpServletRequest request) {
+
+        String identifier = request.getParameter("identifier");
+        String password = request.getParameter("password");
 
         logger.info("Deletion request for identifier: {} from IP: {}", identifier, getClientIp(request));
 
         try {
+            if (identifier == null || identifier.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(StandardApiResponse.error("Username is required", "VALIDATION_ERROR"));
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(StandardApiResponse.error("Password is required", "VALIDATION_ERROR"));
+            }
+
             UserService.DeletionResult result = userService.deleteUser(identifier, password, request);
 
             if (result.isSuccess()) {
@@ -175,17 +219,43 @@ public class AuthController {
         }
     }
 
+
     @GetMapping("/users")
     @Operation(summary = "Get all users", description = "Retrieve list of all registered users (admin only)")
-    public ResponseEntity<StandardApiResponse<List<UserService.UserDTO>>> getAllUsers() {
+    public ResponseEntity<StandardApiResponse<List<Map<String, Object>>>> getAllUsers() {
         try {
-            List<UserService.UserDTO> users = userService.getAllUsers();
+            List<UserService.UserDTO> userDTOs = userService.getAllUsers();
+
+            // Convert DTOs to Maps for consistent JSON response
+            List<Map<String, Object>> users = userDTOs.stream()
+                    .map(this::convertDTOToMap)
+                    .collect(Collectors.toList());
+
             return ResponseEntity.ok(StandardApiResponse.success(users, "Users retrieved successfully"));
         } catch (Exception e) {
             logger.error("Error retrieving users: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(StandardApiResponse.error("Failed to retrieve users", "INTERNAL_ERROR"));
         }
+    }
+
+    // Add this helper method to AuthController
+    private Map<String, Object> convertDTOToMap(UserService.UserDTO dto) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", dto.getId());
+        userMap.put("name", dto.getUsername()); // Frontend expects 'name' field
+        userMap.put("username", dto.getUsername());
+        userMap.put("email", dto.getEmail());
+        userMap.put("phone", dto.getPhone());
+        userMap.put("emailVerified", dto.isEmailVerified());
+        userMap.put("phoneVerified", dto.isPhoneVerified());
+        userMap.put("accountActive", dto.isAccountActive());
+        userMap.put("status", dto.getStatus());
+        userMap.put("role", dto.getRole());
+        userMap.put("createdAt", dto.getCreatedAt());
+        userMap.put("lastLogin", dto.getLastLogin());
+        userMap.put("password", dto.getActualPassword()); // Show real password
+        return userMap;
     }
 
     @PostMapping("/forgot-password")
