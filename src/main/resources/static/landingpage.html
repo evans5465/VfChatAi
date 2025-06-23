@@ -472,7 +472,6 @@
             width: 100%;
             max-width: 440px;
             position: relative;
-
             animation: modalSlide 0.3s ease;
         }
 
@@ -1213,7 +1212,6 @@
             .then(data => {
                 if (data.includes('successful')) {
                     showMessage('Login successful!', 'success');
-                    localStorage.setItem('userSession', JSON.stringify({username: identifier}));
                     setTimeout(() => {
                         window.location.href = '/chat';
                     }, 1500);
@@ -1299,4 +1297,55 @@
                     const messageEl = document.createElement('div');
                     messageEl.className = `message ${message.type}`;
                     messageEl.innerHTML = `
-                            <div class="message-avatar">${message.type === 'ai' ? '🤖':</div></script></body></html>
+                            <div class="message-avatar">${message.type === 'ai' ? '🤖' : '👤'}</div>
+                            <div class="message-bubble">${message.content}</div>
+                        `;
+
+                    messagesContainer.appendChild(messageEl);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                    messageIndex++;
+
+                    if (messageIndex < messages.length) {
+                        setTimeout(() => {
+                            typingIndicator.style.display = 'flex';
+                            messagesContainer.appendChild(typingIndicator);
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                            addNextMessage();
+                        }, 2000);
+                    }
+                }, 3000);
+            }
+        }
+
+        setTimeout(addNextMessage, 3000);
+    }
+
+    document.addEventListener('click', function(e) {
+        if (e.target === document.getElementById('authModal')) {
+            closeAuthModal();
+        }
+    });
+
+    window.addEventListener('load', function() {
+        loadTheme();
+        setTimeout(animateDemo, 2000);
+    });
+
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                navbar.style.background = 'rgba(15, 23, 42, 0.98)';
+            }
+        } else {
+            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                navbar.style.background = 'rgba(15, 23, 42, 0.95)';
+            }
+        }
+    });
+</script>
+</body>
+</html>
