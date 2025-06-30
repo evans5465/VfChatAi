@@ -534,22 +534,6 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/logout")
-    @Operation(summary = "User logout", description = "Invalidate user session")
-    public ResponseEntity<StandardApiResponse<String>> logout(
-            @Parameter(description = "Session ID")
-            @RequestParam @NotBlank String sessionId) {
-
-        try {
-            // Implementation would invalidate the session
-            // For now, return success
-            return ResponseEntity.ok(StandardApiResponse.success("Logged out successfully", "Logout successful"));
-        } catch (Exception e) {
-            logger.error("Logout error for session {}: {}", sessionId, e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(StandardApiResponse.error("Logout failed", "INTERNAL_ERROR"));
-        }
-    }
 
     @GetMapping("/validate-session")
     @Operation(summary = "Validate session", description = "Check if session is valid and active")

@@ -618,6 +618,7 @@
     </style>
 </head>
 <body>
+<a href="/landingpage.html" class="btn btn-secondary">🏠 Home</a>
 <div class="admin-container">
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -842,10 +843,17 @@
             <div class="section" id="analytics">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">System Analytics</h3>
+                        <h3 class="card-title">🚀 Enhanced Analytics Available</h3>
                     </div>
-                    <div class="card-body">
-                        <p>Analytics dashboard coming soon with detailed charts and insights.</p>
+                    <div class="card-body" style="text-align: center; padding: 60px 40px;">
+                        <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
+                        <h3 style="margin-bottom: 15px; color: var(--text-primary);">Comprehensive Analytics Dashboard</h3>
+                        <p style="margin-bottom: 30px; color: var(--text-muted); max-width: 500px; margin-left: auto; margin-right: auto;">
+                            View detailed charts, real-time metrics, user trends, and system performance insights in our dedicated analytics dashboard.
+                        </p>
+                        <a href="/analytics.html" class="btn btn-primary" style="padding: 15px 30px; font-size: 16px;">
+                            📈 Open Analytics Dashboard
+                        </a>
                     </div>
                 </div>
             </div>
@@ -920,7 +928,7 @@
             users: 'User Management',
             verification: 'Verification Queue',
             security: 'Security Logs',
-            analytics: 'Analytics',
+            analytics: 'System Analytics',
             settings: 'Settings',
             logs: 'System Logs'
         };
@@ -933,6 +941,9 @@
             loadVerificationQueue();
         } else if (sectionId === 'security') {
             loadSecurityLogs();
+        } else if (sectionId === 'analytics') {
+            // Redirect to the full analytics page
+            window.location.href = '/analytics.html';
         }
     }
 
@@ -947,33 +958,101 @@
         setTimeout(() => {
             alert.remove();
         }, 5000);
+        console.log(`${type.toUpperCase()}: ${message}`);
     }
 
     function loadUsers() {
-        fetch('/api/auth/users')
-            .then(response => response.json())
-            .then(data => {
-                allUsers = data.map(user => ({
-                    id: user.id,
-                    name: user.name || user.username,
-                    email: user.email || 'Not provided',
-                    phone: user.phone || 'Not provided',
-                    accountActive: user.accountActive,
-                    emailVerified: user.emailVerified,
-                    phoneVerified: user.phoneVerified,
-                    createdAt: user.createdAt || new Date().toISOString(),
-                    password: user.password
-                }));
+        console.log('🔄 Loading users...');
 
-                updateUserStats();
-                displayUsers();
+        fetch('/api/auth/users')
+            .then(response => {
+                console.log('📡 Response status:', response.status);
+                console.log('📡 Response headers:', [...response.headers.entries()]);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return response.text(); // Get as text first
+            })
+            .then(text => {
+                console.log('📄 Raw response:', text);
+
+                try {
+                    const data = JSON.parse(text);
+                    console.log('📊 Parsed JSON:', data);
+
+                    let users = [];
+
+                    // Handle ALL possible response formats
+                    if (data === null || data === undefined) {
+                        console.log('❌ Null or undefined response');
+                        users = [];
+                    } else if (Array.isArray(data)) {
+                        console.log('✅ Direct array format');
+                        users = data;
+                    } else if (data.success === true && Array.isArray(data.data)) {
+                        console.log('✅ StandardApiResponse format');
+                        users = data.data;
+                    } else if (data.data && Array.isArray(data.data)) {
+                        console.log('✅ Wrapped data format');
+                        users = data.data;
+                    } else if (typeof data === 'object' && data.length !== undefined) {
+                        console.log('✅ Object with length property');
+                        users = Object.values(data);
+                    } else {
+                        console.log('⚠️ Unknown format, attempting conversion');
+                        users = [];
+                    }
+
+                    console.log('👥 Final users array:', users);
+                    console.log('📊 Users count:', users.length);
+
+                    // Transform users to ensure consistent format
+                    allUsers = users.map((user, index) => {
+                        console.log(`👤 Processing user ${index}:`, user);
+                        return {
+                            id: user.id || index + 1,
+                            name: user.name || user.username || `User${index + 1}`,
+                            username: user.username || user.name || `user${index + 1}`,
+                            email: user.email || 'No email provided',
+                            phone: user.phone || 'No phone provided',
+                            accountActive: Boolean(user.accountActive),
+                            emailVerified: Boolean(user.emailVerified),
+                            phoneVerified: Boolean(user.phoneVerified),
+                            createdAt: user.createdAt || new Date().toISOString(),
+                            password: user.password || user.actualPassword || 'Hidden'
+                        };
+                    });
+
+                    console.log('✅ Processed users:', allUsers);
+                    updateUserStats();
+                    displayUsers();
+                    loadRecentActivity(); // Load real activity after users are loaded
+
+                } catch (parseError) {
+                    console.error('❌ JSON parsing failed:', parseError);
+                    console.error('📄 Raw text that failed to parse:', text);
+
+                    // Fallback: treat as plain text response
+                    allUsers = [];
+                    document.getElementById('usersTableBody').innerHTML = `
+                        <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">
+                            Invalid response format. Raw response: ${text.substring(0, 100)}...
+                        </td></tr>
+                    `;
+                }
             })
             .catch(error => {
-                console.error('Error loading users:', error);
-                showAlert('Failed to load users', 'error');
+                console.error('❌ Fetch error:', error);
+                allUsers = [];
+                const errorMessage = error.message || 'Unknown error';
                 document.getElementById('usersTableBody').innerHTML = `
-                        <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Failed to load users</td></tr>
-                    `;
+                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">
+                        Failed to load users: ${errorMessage}
+                    </td></tr>
+                `;
+                showAlert('Failed to load users: ' + errorMessage, 'error');
             });
     }
 
@@ -983,10 +1062,15 @@
         const pendingUsers = allUsers.filter(user => !user.accountActive).length;
         const lockedUsers = 0;
 
-        document.getElementById('totalUsers').textContent = totalUsers;
-        document.getElementById('activeUsers').textContent = activeUsers;
-        document.getElementById('pendingUsers').textContent = pendingUsers;
-        document.getElementById('lockedUsers').textContent = lockedUsers;
+        const totalElement = document.getElementById('totalUsers');
+        const activeElement = document.getElementById('activeUsers');
+        const pendingElement = document.getElementById('pendingUsers');
+        const lockedElement = document.getElementById('lockedUsers');
+
+        if (totalElement) totalElement.textContent = totalUsers;
+        if (activeElement) activeElement.textContent = activeUsers;
+        if (pendingElement) pendingElement.textContent = pendingUsers;
+        if (lockedElement) lockedElement.textContent = lockedUsers;
     }
 
     function displayUsers() {
@@ -995,51 +1079,55 @@
         const usersToShow = allUsers.slice(startIndex, endIndex);
 
         const tbody = document.getElementById('usersTableBody');
+        if (!tbody) return;
 
         if (usersToShow.length === 0) {
             tbody.innerHTML = `
-                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No users found</td></tr>
-                `;
+                <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                    <div>No users found</div>
+                    <div style="margin-top: 10px; font-size: 14px;">Users will appear here after registration</div>
+                </td></tr>
+            `;
             return;
         }
 
-        tbody.innerHTML = usersToShow.map(user => `
-                <tr>
-                    <td>
-                        <div class="user-info">
-                            <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
-                            <div class="user-details">
-                                <h4>${user.name}</h4>
-                                <p>ID: ${user.id}</p>
-                            </div>
+        tbody.innerHTML = usersToShow.map((user, index) => `
+            <tr>
+                <td>
+                    <div class="user-info">
+                        <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                        <div class="user-details">
+                            <h4>${user.name}</h4>
+                            <p>ID: ${user.id}</p>
                         </div>
-                    </td>
-                    <td>${user.email}</td>
-                    <td>${user.phone}</td>
-                    <td>
-                        <span class="status-badge ${user.accountActive ? 'status-active' : 'status-pending'}">
-                            ${user.accountActive ? 'Active' : 'Pending'}
+                    </div>
+                </td>
+                <td>${user.email}</td>
+                <td>${user.phone}</td>
+                <td>
+                    <span class="status-badge ${user.accountActive ? 'status-active' : 'status-pending'}">
+                        ${user.accountActive ? 'Active' : 'Pending'}
+                    </span>
+                </td>
+                <td>
+                    <div class="verification-status">
+                        <span class="verification-item ${user.emailVerified ? 'verified' : 'not-verified'}">
+                            📧 ${user.emailVerified ? 'Verified' : 'Pending'}
                         </span>
-                    </td>
-                    <td>
-                        <div class="verification-status">
-                            <span class="verification-item ${user.emailVerified ? 'verified' : 'not-verified'}">
-                                📧 ${user.emailVerified ? 'Verified' : 'Pending'}
-                            </span>
-                            <span class="verification-item ${user.phoneVerified ? 'verified' : 'not-verified'}">
-                                📱 ${user.phoneVerified ? 'Verified' : 'Pending'}
-                            </span>
-                        </div>
-                    </td>
-                    <td>${new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-secondary btn-small" onclick="viewUser(${user.id})" title="View Details">👁️</button>
-                            <button class="btn btn-danger btn-small" onclick="deleteUser('${user.name}', '${user.password}')" title="Delete User">🗑️</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+                        <span class="verification-item ${user.phoneVerified ? 'verified' : 'not-verified'}">
+                            📱 ${user.phoneVerified ? 'Verified' : 'Pending'}
+                        </span>
+                    </div>
+                </td>
+                <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary btn-small" onclick="viewUser(${user.id})" title="View Details">👁️</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteUser('${user.username}', '${user.password}')" title="Delete User">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
 
         updatePagination();
     }
@@ -1218,50 +1306,147 @@
     function refreshData() {
         showAlert('Refreshing dashboard data...', 'success');
         loadUsers();
-        loadRecentActivity();
+    }
+
+    // Add this function to handle API response debugging:
+
+    function debugApiResponse() {
+        fetch('/api/auth/users')
+            .then(response => {
+                console.log('=== API DEBUG INFO ===');
+                console.log('Status:', response.status);
+                console.log('Headers:', [...response.headers.entries()]);
+                return response.text();
+            })
+            .then(text => {
+                console.log('Raw response text:', text);
+                try {
+                    const json = JSON.parse(text);
+                    console.log('Parsed JSON:', json);
+                    console.log('Data type:', typeof json);
+                    console.log('Is array:', Array.isArray(json));
+                    if (json.data) {
+                        console.log('Data property type:', typeof json.data);
+                        console.log('Data is array:', Array.isArray(json.data));
+                    }
+                } catch (e) {
+                    console.log('Failed to parse as JSON:', e);
+                }
+                console.log('=== END DEBUG INFO ===');
+            })
+            .catch(error => {
+                console.error('Debug fetch error:', error);
+            });
     }
 
     function loadRecentActivity() {
-        setTimeout(() => {
-            document.getElementById('recentActivity').innerHTML = `
-                    <div style="border-bottom: 1px solid var(--border-color); padding: 15px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h4 style="font-size: 14px; margin-bottom: 5px;">New user registration</h4>
-                                <p style="color: var(--text-muted); font-size: 13px;">john.doe@example.com joined the platform</p>
-                            </div>
-                            <span style="color: var(--text-muted); font-size: 12px;">2 minutes ago</span>
+        console.log('🔄 Loading recent activity...');
+
+        const activityContainer = document.getElementById('recentActivity');
+        if (!activityContainer) {
+            console.log('❌ Activity container not found');
+            return;
+        }
+
+        if (!allUsers || allUsers.length === 0) {
+            activityContainer.innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); padding: 40px;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">📝</div>
+                    <h3>No Activity Yet</h3>
+                    <p>Once users start registering, their activity will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Generate real activities from user data
+        const activities = [];
+
+        allUsers.forEach(user => {
+            const userCreated = new Date(user.createdAt);
+            const timeDiff = Date.now() - userCreated.getTime();
+            const minutesAgo = Math.floor(timeDiff / (1000 * 60));
+
+            let timeText;
+            if (minutesAgo < 1) timeText = 'Just now';
+            else if (minutesAgo < 60) timeText = `${minutesAgo} minute${minutesAgo > 1 ? 's' : ''} ago`;
+            else if (minutesAgo < 1440) timeText = `${Math.floor(minutesAgo / 60)} hour${Math.floor(minutesAgo / 60) > 1 ? 's' : ''} ago`;
+            else timeText = `${Math.floor(minutesAgo / 1440)} day${Math.floor(minutesAgo / 1440) > 1 ? 's' : ''} ago`;
+
+            // User registration
+            activities.push({
+                icon: '👤',
+                title: 'New user registration',
+                description: `${user.username} joined the platform`,
+                time: timeText,
+                timestamp: userCreated.getTime()
+            });
+
+            // Email verification
+            if (user.emailVerified) {
+                activities.push({
+                    icon: '📧',
+                    title: 'Email verification completed',
+                    description: `${user.username} verified their email`,
+                    time: timeText,
+                    timestamp: userCreated.getTime() + 60000 // 1 minute after registration
+                });
+            }
+
+            // Phone verification
+            if (user.phoneVerified) {
+                activities.push({
+                    icon: '📱',
+                    title: 'SMS verification completed',
+                    description: `${user.username} verified their phone`,
+                    time: timeText,
+                    timestamp: userCreated.getTime() + 120000 // 2 minutes after registration
+                });
+            }
+
+            // Account activation
+            if (user.accountActive) {
+                activities.push({
+                    icon: '✅',
+                    title: 'Account activated',
+                    description: `${user.username} account is now active`,
+                    time: timeText,
+                    timestamp: userCreated.getTime() + 180000 // 3 minutes after registration
+                });
+            }
+        });
+
+        // Sort by timestamp (most recent first) and take top 8
+        const sortedActivities = activities
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .slice(0, 8);
+
+        if (sortedActivities.length === 0) {
+            activityContainer.innerHTML = `
+                <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                    <p>No recent activity from registered users.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const activityHtml = sortedActivities.map(activity => `
+            <div style="border-bottom: 1px solid var(--border-color); padding: 15px 0; last-child:border-bottom: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="font-size: 20px; width: 24px; text-align: center;">${activity.icon}</div>
+                        <div>
+                            <h4 style="font-size: 14px; margin-bottom: 4px; font-weight: 600;">${activity.title}</h4>
+                            <p style="color: var(--text-muted); font-size: 13px; margin: 0;">${activity.description}</p>
                         </div>
                     </div>
-                    <div style="border-bottom: 1px solid var(--border-color); padding: 15px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h4 style="font-size: 14px; margin-bottom: 5px;">Email verification completed</h4>
-                                <p style="color: var(--text-muted); font-size: 13px;">alice.smith@example.com verified their email</p>
-                            </div>
-                            <span style="color: var(--text-muted); font-size: 12px;">5 minutes ago</span>
-                        </div>
-                    </div>
-                    <div style="border-bottom: 1px solid var(--border-color); padding: 15px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h4 style="font-size: 14px; margin-bottom: 5px;">Account activation</h4>
-                                <p style="color: var(--text-muted); font-size: 13px;">bob.wilson@example.com account activated</p>
-                            </div>
-                            <span style="color: var(--text-muted); font-size: 12px;">10 minutes ago</span>
-                        </div>
-                    </div>
-                    <div style="padding: 15px 0 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h4 style="font-size: 14px; margin-bottom: 5px;">System maintenance</h4>
-                                <p style="color: var(--text-muted); font-size: 13px;">Database optimization completed</p>
-                            </div>
-                            <span style="color: var(--text-muted); font-size: 12px;">1 hour ago</span>
-                        </div>
-                    </div>
-                `;
-        }, 1000);
+                    <span style="color: var(--text-muted); font-size: 12px; white-space: nowrap;">${activity.time}</span>
+                </div>
+            </div>
+        `).join('');
+
+        activityContainer.innerHTML = activityHtml;
+        console.log('✅ Activity loaded successfully');
     }
 
     function checkAdminAccess() {
@@ -1280,6 +1465,7 @@
     }
 
     window.addEventListener('load', function() {
+        console.log('🚀 Admin panel initializing...');
         if (!checkAdminAccess()) return;
 
         loadTheme();
@@ -1287,6 +1473,7 @@
         loadRecentActivity();
 
         showAlert('Admin panel loaded successfully', 'success');
+        console.log('✅ Admin panel initialized');
     });
 
     window.addEventListener('resize', function() {
@@ -1295,5 +1482,6 @@
         }
     });
 </script>
+
 </body>
 </html>

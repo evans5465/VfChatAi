@@ -4,32 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VFChatAI - The Future of AI Conversations</title>
+    <meta name="description" content="Experience revolutionary AI-powered conversations with VFChatAI. Advanced AI, lightning fast responses, and privacy-first design.">
+    <meta name="keywords" content="AI, chatbot, artificial intelligence, conversation, VFChatAI">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #00d4ff, #5b21b6);
-            --accent-gradient: linear-gradient(135deg, #10b981, #059669);
-            --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
-
-            --bg-color: #ffffff;
-            --surface-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1a202c;
-            --text-secondary: #4a5568;
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #ffffff;
+            --surface: #f8fafc;
+            --card: #ffffff;
+            --text: #1a202c;
             --text-muted: #718096;
-            --border-color: #e2e8f0;
+            --border: #e2e8f0;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.1);
         }
 
         [data-theme="dark"] {
-            --bg-color: #0f172a;
-            --surface-color: #1e293b;
-            --card-bg: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --card: #334155;
+            --text: #f1f5f9;
             --text-muted: #94a3b8;
-            --border-color: #475569;
+            --border: #475569;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.25);
         }
@@ -41,38 +42,57 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
             transition: all 0.3s ease;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        /* Enhanced animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+        }
+
+        /* Navigation */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border);
             z-index: 1000;
             padding: 15px 0;
             transition: all 0.3s ease;
         }
 
         [data-theme="dark"] .navbar {
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 23, 42, 0.9);
         }
 
         .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -81,23 +101,24 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 24px;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--text);
             text-decoration: none;
         }
 
         .logo-icon {
             width: 40px;
             height: 40px;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 18px;
+            animation: glow 3s ease-in-out infinite;
         }
 
         .nav-buttons {
@@ -107,8 +128,8 @@
         }
 
         .theme-toggle {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
+            background: var(--card);
+            border: 2px solid var(--border);
             border-radius: 50%;
             width: 44px;
             height: 44px;
@@ -128,7 +149,7 @@
         .btn {
             padding: 12px 24px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -137,34 +158,17 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
         }
 
         .btn-primary {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
 
         .btn-secondary {
             background: transparent;
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
+            color: var(--text);
+            border: 2px solid var(--border);
         }
 
         .btn:hover {
@@ -172,63 +176,43 @@
             box-shadow: var(--shadow-lg);
         }
 
+        /* Hero Section */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
+            padding: 100px 20px 50px;
             background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23e2e8f0" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
-            pointer-events: none;
         }
 
         .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 80px;
+            gap: 60px;
             align-items: center;
-            position: relative;
-            z-index: 2;
         }
 
         .hero-text {
-            animation: fadeInUp 1s ease;
+            animation: fadeInUp 1s ease-out;
         }
 
         .hero-title {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 20px;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .hero-subtitle {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            line-height: 1.4;
-        }
-
-        .hero-description {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             color: var(--text-muted);
-            margin-bottom: 40px;
-            line-height: 1.6;
+            margin-bottom: 30px;
         }
 
         .hero-buttons {
@@ -240,25 +224,23 @@
         .btn-large {
             padding: 16px 32px;
             font-size: 18px;
-            min-width: 160px;
         }
 
         .hero-visual {
-            position: relative;
-            animation: fadeInRight 1s ease;
+            animation: slideInLeft 1s ease-out;
         }
 
         .chat-preview {
-            background: var(--card-bg);
+            background: var(--card);
             border-radius: 20px;
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             overflow: hidden;
-            position: relative;
+            animation: pulse 4s ease-in-out infinite;
         }
 
         .chat-header {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 20px;
             display: flex;
@@ -277,16 +259,6 @@
             font-size: 18px;
         }
 
-        .chat-info h4 {
-            font-size: 16px;
-            margin-bottom: 2px;
-        }
-
-        .chat-info p {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
         .chat-messages {
             padding: 30px;
             min-height: 300px;
@@ -299,7 +271,7 @@
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            animation: messageSlide 0.5s ease;
+            animation: fadeInUp 0.5s ease;
         }
 
         .message.user {
@@ -318,134 +290,85 @@
         }
 
         .message.ai .message-avatar {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
 
         .message.user .message-avatar {
-            background: var(--accent-gradient);
+            background: linear-gradient(135deg, var(--accent), #059669);
             color: white;
         }
 
         .message-bubble {
-            background: var(--surface-color);
+            background: var(--surface);
             padding: 12px 16px;
             border-radius: 16px;
+            border: 1px solid var(--border);
             max-width: 80%;
-            position: relative;
         }
 
         .message.user .message-bubble {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
+            border: none;
         }
 
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 12px 16px;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--text-muted);
-            border-radius: 50%;
-            animation: typing 1.5s infinite;
-        }
-
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
+        /* Features Section */
         .features {
-            padding: 120px 0;
-            background: var(--surface-color);
+            padding: 100px 20px;
+            background: var(--surface);
         }
 
         .section-header {
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 60px;
         }
 
         .section-title {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .section-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
+            color: var(--text);
         }
 
         .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
+            gap: 30px;
         }
 
         .feature-card {
-            background: var(--card-bg);
+            background: var(--card);
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+            border: 1px solid var(--border);
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--primary-gradient);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover::before {
-            transform: scaleX(1);
+            transition: all 0.3s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
             box-shadow: var(--shadow-lg);
         }
 
         .feature-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--primary-gradient);
-            border-radius: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 24px;
             color: white;
             margin: 0 auto 20px;
         }
 
-        .feature-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-        }
-
-        .feature-description {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        .auth-modal {
+        /* Modal Styles */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -460,62 +383,60 @@
             padding: 20px;
         }
 
-        .auth-modal.active {
+        .modal.active {
             display: flex;
         }
 
-        .auth-content {
-            background: var(--card-bg);
+        .modal-content {
+            background: var(--card);
             border-radius: 20px;
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             width: 100%;
-            max-width: 440px;
+            max-width: 450px;
             position: relative;
-            animation: modalSlide 0.3s ease;
+            animation: fadeInUp 0.3s ease;
         }
 
-        .auth-header {
+        .modal-header {
             padding: 30px 30px 0;
             text-align: center;
         }
 
-        .auth-title {
+        .modal-title {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 10px;
-            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .auth-subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
-        .auth-tabs {
+        .modal-tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin: 20px 0;
         }
 
-        .auth-tab {
+        .tab {
             flex: 1;
             padding: 12px;
-            background: var(--surface-color);
+            background: var(--surface);
             border: none;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             font-weight: 500;
         }
 
-        .auth-tab.active {
-            background: var(--primary-gradient);
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
 
-        .auth-form {
+        .modal-body {
             padding: 0 30px 30px;
         }
 
@@ -527,56 +448,42 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: var(--text-primary);
+            color: var(--text);
         }
 
         .form-input {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid var(--border-color);
+            border: 2px solid var(--border);
             border-radius: 10px;
-            background: var(--bg-color);
-            color: var(--text-primary);
+            background: var(--bg);
+            color: var(--text);
             font-size: 16px;
             transition: all 0.3s ease;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .form-input.error {
+            border-color: var(--danger);
+            animation: shake 0.5s ease;
         }
 
-        .country-input {
-            display: flex;
-            gap: 10px;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
-        .country-code {
-            padding: 12px;
-            background: var(--surface-color);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            min-width: 80px;
-            text-align: center;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .phone-input {
-            flex: 1;
-        }
-
-        .password-requirements {
+        .form-error {
+            color: var(--danger);
             font-size: 14px;
-            color: var(--text-muted);
             margin-top: 5px;
+            display: none;
         }
 
         .close-modal {
@@ -598,128 +505,59 @@
         }
 
         .close-modal:hover {
-            background: var(--surface-color);
-            color: var(--text-primary);
+            background: var(--surface);
+            color: var(--text);
         }
 
-        .form-footer {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-secondary);
-        }
-
-        .link-button {
-            background: none;
-            border: none;
-            color: #667eea;
-            cursor: pointer;
-            text-decoration: underline;
-            font-size: inherit;
-        }
-
-        .verification-section {
-            display: none;
-            text-align: center;
-            padding: 20px 0;
-        }
-
-        .verification-section.active {
-            display: block;
-        }
-
-        .verification-choices {
-            display: flex;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .verification-choice {
-            flex: 1;
-            padding: 20px;
-            background: var(--surface-color);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            cursor: pointer;
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card);
+            color: var(--text);
+            padding: 16px 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            z-index: 10000;
+            transform: translateX(400px);
             transition: all 0.3s ease;
-            text-align: center;
+            max-width: 350px;
         }
 
-        .verification-choice:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
+        .toast.show {
+            transform: translateX(0);
         }
 
-        .verification-choice.selected {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+        .toast.success {
+            border-left: 4px solid var(--accent);
         }
 
-        .verification-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-            display: block;
+        .toast.error {
+            border-left: 4px solid var(--danger);
         }
 
-        .code-input {
-            font-family: 'Courier New', monospace;
-            font-size: 24px;
-            text-align: center;
-            letter-spacing: 8px;
-            padding: 16px;
-            margin: 20px 0;
+        .toast.warning {
+            border-left: 4px solid var(--warning);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
         }
 
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        @keyframes messageSlide {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-10px); }
-        }
-
-        @keyframes modalSlide {
-            from {
-                opacity: 0;
-                transform: translateY(-50px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
+        /* Responsive design */
         @media (max-width: 768px) {
             .hero-content {
                 grid-template-columns: 1fr;
@@ -731,8 +569,8 @@
                 font-size: 2.5rem;
             }
 
-            .hero-subtitle {
-                font-size: 1.2rem;
+            .features-grid {
+                grid-template-columns: 1fr;
             }
 
             .nav-buttons {
@@ -743,80 +581,53 @@
                 padding: 10px 20px;
                 font-size: 14px;
             }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .verification-choices {
-                flex-direction: column;
-            }
         }
     </style>
 </head>
 <body>
+<!-- Navigation -->
 <nav class="navbar">
-    <div class="container">
-        <div class="nav-content">
-            <a href="#" class="logo">
-                <div class="logo-icon">🤖</div>
-                VFChatAI
-            </a>
-            <div class="nav-buttons">
-                <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
-                <a href="#" class="btn btn-secondary" onclick="openAuthModal('login')">Login</a>
-                <a href="#" class="btn btn-primary" onclick="openAuthModal('signup')">Get Started</a>
-            </div>
+    <div class="nav-content">
+        <a href="#" class="logo">
+            <div class="logo-icon">🤖</div>
+            VFChatAI
+        </a>
+        <div class="nav-buttons">
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+            <a href="#" class="btn btn-secondary" onclick="openModal('login')">Login</a>
+            <a href="#" class="btn btn-primary" onclick="openModal('signup')">Get Started</a>
         </div>
     </div>
 </nav>
 
+<!-- Hero Section -->
 <section class="hero">
-    <div class="container">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h1 class="hero-title">The Future of AI Conversations</h1>
-                <p class="hero-subtitle">Experience revolutionary AI-powered conversations that understand, learn, and adapt to your needs.</p>
-                <p class="hero-description">Join thousands of users who are already transforming their productivity and creativity with VFChatAI's cutting-edge artificial intelligence technology.</p>
-                <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary btn-large" onclick="openAuthModal('signup')">Start Chatting Free</a>
-                    <a href="#" class="btn btn-secondary btn-large" onclick="scrollToFeatures()">Learn More</a>
-                </div>
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">The Future of AI Conversations</h1>
+            <p class="hero-subtitle">Experience revolutionary AI-powered conversations that understand, learn, and adapt to your needs.</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary btn-large" onclick="openModal('signup')">Start Chatting Free</a>
+                <a href="#features" class="btn btn-secondary btn-large">Learn More</a>
             </div>
-            <div class="hero-visual">
-                <div class="chat-preview">
-                    <div class="chat-header">
-                        <div class="chat-avatar">🤖</div>
-                        <div class="chat-info">
-                            <h4>VFChatAI Assistant</h4>
-                            <p>Online • Always ready to help</p>
-                        </div>
+        </div>
+        <div class="hero-visual">
+            <div class="chat-preview">
+                <div class="chat-header">
+                    <div class="chat-avatar">🤖</div>
+                    <div>
+                        <h4>VFChatAI Assistant</h4>
+                        <p>Online • Ready to help</p>
                     </div>
-                    <div class="chat-messages" id="demoMessages">
-                        <div class="message user">
-                            <div class="message-avatar">👤</div>
-                            <div class="message-bubble">Hello! Can you help me write a creative story?</div>
-                        </div>
-                        <div class="message ai">
-                            <div class="message-avatar">🤖</div>
-                            <div class="message-bubble">Absolutely! I'd love to help you create an engaging story. What genre or theme interests you?</div>
-                        </div>
-                        <div class="message user">
-                            <div class="message-avatar">👤</div>
-                            <div class="message-bubble">A sci-fi adventure about space exploration</div>
-                        </div>
-                        <div class="message ai">
-                            <div class="message-avatar">🤖</div>
-                            <div class="typing-indicator" id="typingIndicator">
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
-                            </div>
-                        </div>
+                </div>
+                <div class="chat-messages">
+                    <div class="message user">
+                        <div class="message-avatar">👤</div>
+                        <div class="message-bubble">Hello! Can you help me write a creative story?</div>
+                    </div>
+                    <div class="message ai">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-bubble">Absolutely! I'd love to help you create an engaging story. What genre interests you?</div>
                     </div>
                 </div>
             </div>
@@ -824,191 +635,315 @@
     </div>
 </section>
 
+<!-- Features Section -->
 <section class="features" id="features">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Why Choose VFChatAI?</h2>
-            <p class="section-subtitle">Experience the next generation of AI technology with features designed for modern users</p>
+    <div class="section-header">
+        <h2 class="section-title">Why Choose VFChatAI?</h2>
+        <p>Experience the next generation of AI technology</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Advanced Intelligence</h3>
+            <p>Powered by state-of-the-art AI models that understand context and provide human-like responses.</p>
         </div>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🧠</div>
-                <h3 class="feature-title">Advanced Intelligence</h3>
-                <p class="feature-description">Powered by state-of-the-art AI models that understand context, nuance, and provide human-like responses.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3 class="feature-title">Lightning Fast</h3>
-                <p class="feature-description">Get instant responses with our optimized infrastructure that delivers results in milliseconds.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h3 class="feature-title">Privacy First</h3>
-                <p class="feature-description">Your conversations are encrypted and secure. We never store or share your personal data.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🌍</div>
-                <h3 class="feature-title">Multi-Language</h3>
-                <p class="feature-description">Communicate in over 50 languages with natural translation and cultural understanding.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎨</div>
-                <h3 class="feature-title">Creative Assistant</h3>
-                <p class="feature-description">From writing to coding to creative projects, VFChatAI adapts to your creative needs.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h3 class="feature-title">Cross-Platform</h3>
-                <p class="feature-description">Access VFChatAI anywhere - web, mobile, or desktop. Your conversations sync seamlessly.</p>
-            </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Lightning Fast</h3>
+            <p>Get instant responses with our optimized infrastructure that delivers results in milliseconds.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Privacy First</h3>
+            <p>Your conversations are encrypted and secure. We never store or share your personal data.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌍</div>
+            <h3>Multi-Language</h3>
+            <p>Communicate in over 50 languages with natural translation and cultural understanding.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>Creative Assistant</h3>
+            <p>From writing to coding to creative projects, VFChatAI adapts to your creative needs.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Cross-Platform</h3>
+            <p>Access VFChatAI anywhere - web, mobile, or desktop. Your conversations sync seamlessly.</p>
         </div>
     </div>
 </section>
 
-<div class="auth-modal" id="authModal">
-    <div class="auth-content">
-        <button class="close-modal" onclick="closeAuthModal()">×</button>
-        <div class="auth-header">
-            <h2 class="auth-title" id="authTitle">Welcome to VFChatAI</h2>
-            <p class="auth-subtitle" id="authSubtitle">Join the future of AI conversations</p>
-
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="loginTab" onclick="switchTab('login')">Login</button>
-                <button class="auth-tab" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
+<!-- Authentication Modal -->
+<div class="modal" id="authModal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal()">×</button>
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Welcome to VFChatAI</h2>
+            <p id="modalSubtitle">Join the future of AI conversations</p>
+            <div class="modal-tabs">
+                <button class="tab active" id="loginTab" onclick="switchTab('login')">Login</button>
+                <button class="tab" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
             </div>
         </div>
-
-        <form class="auth-form" id="authForm">
-            <div id="loginForm" class="form-section">
-                <div class="form-group">
-                    <label class="form-label">Username or Email</label>
-                    <input type="text" class="form-input" id="loginIdentifier" placeholder="Enter your username or email">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-                <div class="form-footer">
-                    <button type="button" class="link-button" onclick="showForgotPassword()">Forgot password?</button>
-                </div>
-            </div>
-
-            <div id="signupForm" class="form-section" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-input" id="signupUsername" placeholder="Choose a username">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-input" id="signupEmail" placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Country</label>
-                    <select class="form-input" id="signupCountry" onchange="updateCountryCode()">
-                        <option value="">Select Country</option>
-                        <option value="+30">🇬🇷 Greece (+30)</option>
-                        <option value="+1">🇺🇸 United States (+1)</option>
-                        <option value="+1">🇨🇦 Canada (+1)</option>
-                        <option value="+44">🇬🇧 United Kingdom (+44)</option>
-                        <option value="+49">🇩🇪 Germany (+49)</option>
-                        <option value="+33">🇫🇷 France (+33)</option>
-                        <option value="+39">🇮🇹 Italy (+39)</option>
-                        <option value="+34">🇪🇸 Spain (+34)</option>
-                        <option value="+31">🇳🇱 Netherlands (+31)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Phone (Optional)</label>
-                    <div class="country-input">
-                        <div class="country-code" id="countryCodeDisplay">+--</div>
-                        <input type="tel" class="form-input phone-input" id="signupPhone" placeholder="Enter phone number">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" id="signupPassword" placeholder="Create a strong password">
-                    <div class="password-requirements">
-                        At least 8 characters with uppercase, lowercase, number, and special character
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
-                <div class="form-footer">
-                    By signing up, you agree to our Terms of Service and Privacy Policy
-                </div>
-            </div>
-
-            <div id="verificationSection" class="verification-section">
-                <h3>Verify Your Account</h3>
-                <p>Choose how you'd like to verify your account:</p>
-
-                <div class="verification-choices">
-                    <div class="verification-choice" id="emailVerification" onclick="selectVerification('email')">
-                        <span class="verification-icon">📧</span>
-                        <div>Email Verification</div>
-                        <small id="userEmail"></small>
-                    </div>
-                    <div class="verification-choice" id="smsVerification" onclick="selectVerification('sms')">
-                        <span class="verification-icon">📱</span>
-                        <div>SMS Verification</div>
-                        <small id="userPhone"></small>
-                    </div>
-                </div>
-
-                <div id="codeEntry" style="display: none;">
+        <div class="modal-body">
+            <form id="authForm" onsubmit="handleSubmit(event)">
+                <div id="loginForm">
                     <div class="form-group">
-                        <label class="form-label">Enter Verification Code</label>
-                        <input type="text" class="form-input code-input" id="verificationCode" placeholder="000000" maxlength="6">
+                        <label class="form-label">Username or Email</label>
+                        <input type="text" class="form-input" id="loginIdentifier" name="loginIdentifier" placeholder="Enter your username or email">
+                        <div class="form-error" id="loginIdentifierError"></div>
                     </div>
-                    <button type="button" class="btn btn-primary" style="width: 100%;" onclick="verifyCode()">Verify Code</button>
-                    <div class="form-footer">
-                        <button type="button" class="link-button" onclick="resendCode()">Resend code</button>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" name="loginPassword" placeholder="Enter your password">
+                        <div class="form-error" id="loginPasswordError"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginBtn">Login</button>
+                </div>
+
+                <div id="signupForm" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="signupUsername" name="signupUsername" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="signupEmail" name="signupEmail" placeholder="Enter your email">
+                        <div class="form-error" id="signupEmailError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country (Optional)</label>
+                        <select class="form-input" id="signupCountry" name="signupCountry" onchange="updateCountryCode()">
+                            <option value="">Select Country</option>
+                            <option value="+30">🇬🇷 Greece (+30)</option>
+                            <option value="+1">🇺🇸 United States (+1)</option>
+                            <option value="+44">🇬🇧 United Kingdom (+44)</option>
+                            <option value="+49">🇩🇪 Germany (+49)</option>
+                            <option value="+33">🇫🇷 France (+33)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone (Optional)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <span id="countryCode" style="padding: 12px; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; min-width: 70px; text-align: center;">+--</span>
+                            <input type="tel" class="form-input" id="signupPhone" name="signupPhone" placeholder="Phone number" style="flex: 1;">
+                        </div>
+                        <div class="form-error" id="signupPhoneError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="signupPassword" name="signupPassword" placeholder="Create a strong password">
+                        <div class="form-error" id="signupPasswordError"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;" id="signupBtn">Create Account</button>
+                </div>
+
+                <!-- Verification Section -->
+                <div id="verificationSection" style="display: none;">
+                    <h3>Verify Your Account</h3>
+                    <p>Choose how you'd like to verify:</p>
+                    <div style="display: flex; gap: 15px; margin: 20px 0;">
+                        <div class="verification-choice" id="emailChoice" onclick="selectVerification('email')" style="flex: 1; padding: 20px; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">📧</div>
+                            <div>Email</div>
+                            <small id="userEmail"></small>
+                        </div>
+                        <div class="verification-choice" id="smsChoice" onclick="selectVerification('sms')" style="flex: 1; padding: 20px; background: var(--surface); border: 2px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">📱</div>
+                            <div>SMS</div>
+                            <small id="userPhone"></small>
+                        </div>
+                    </div>
+                    <div id="codeEntry" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Enter Verification Code</label>
+                            <input type="text" class="form-input" id="verificationCode" name="verificationCode" placeholder="000000" maxlength="6" style="text-align: center; font-size: 18px; letter-spacing: 4px;">
+                            <div class="form-error" id="verificationCodeError"></div>
+                        </div>
+                        <button type="button" class="btn btn-primary" style="width: 100%;" onclick="verifyCode()" id="verifyBtn">Verify Code</button>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    let currentUser = null;
-    let selectedVerificationMethod = '';
-    let userEmail = '';
-    let userPhone = '';
+    // Application state
+    const AppState = {
+        currentUser: null,
+        selectedMethod: '',
+        userEmail: '',
+        userPhone: '',
+        theme: localStorage.getItem('theme') || 'light'
+    };
 
+    // Error handling system
+    class ErrorHandler {
+        static showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type} show`;
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: auto;">×</button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        static showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            if (field) field.classList.add('error');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        static clearFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            if (field) field.classList.remove('error');
+            if (errorDiv) errorDiv.style.display = 'none';
+        }
+    }
+
+    // API service
+    class ApiService {
+        static async request(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    ...options
+                });
+
+                const text = await response.text();
+                try {
+                    return JSON.parse(text);
+                } catch {
+                    return { success: response.ok, message: text };
+                }
+            } catch (error) {
+                throw new Error('Network error. Please check your connection.');
+            }
+        }
+
+        static async register(data) {
+            const params = new URLSearchParams();
+            Object.entries(data).forEach(([key, value]) => {
+                if (value) params.append(key, value);
+            });
+            return this.request('/api/auth/register', { method: 'POST', body: params });
+        }
+
+        static async login(data) {
+            const params = new URLSearchParams();
+            params.append('identifier', data.identifier);
+            params.append('password', data.password);
+            return this.request('/api/auth/login', { method: 'POST', body: params });
+        }
+
+        static async sendVerification(username, method) {
+            const params = new URLSearchParams();
+            params.append('username', username);
+            params.append('method', method);
+            return this.request('/api/auth/choose-verification', { method: 'POST', body: params });
+        }
+
+        static async verifyCode(username, code, method) {
+            const params = new URLSearchParams();
+            params.append('username', username);
+            params.append('code', code);
+            const endpoint = method === 'email' ? '/api/auth/verify-email' : '/api/auth/verify-sms';
+            return this.request(endpoint, { method: 'POST', body: params });
+        }
+    }
+
+    // Validation
+    function validateForm(data, isSignup = false) {
+        const errors = {};
+
+        if (isSignup) {
+            if (!data.username || data.username.length < 3) {
+                errors.username = 'Username must be at least 3 characters';
+            }
+            if (!data.email || !/\S+@\S+\.\S+/.test(data.email)) {
+                errors.email = 'Valid email is required';
+            }
+        } else {
+            if (!data.identifier) {
+                errors.identifier = 'Username or email is required';
+            }
+        }
+
+        if (!data.password || data.password.length < 8) {
+            errors.password = 'Password must be at least 8 characters';
+        }
+
+        return errors;
+    }
+
+    function setLoading(buttonId, loading = true) {
+        const btn = document.getElementById(buttonId);
+        if (!btn) return;
+
+        if (loading) {
+            btn.dataset.originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            btn.disabled = true;
+        } else {
+            btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+            btn.disabled = false;
+        }
+    }
+
+    // Theme management
     function toggleTheme() {
         const body = document.body;
-        const themeToggle = document.getElementById('themeToggle');
+        const toggle = document.getElementById('themeToggle');
 
         if (body.getAttribute('data-theme') === 'dark') {
             body.removeAttribute('data-theme');
-            themeToggle.textContent = '🌙';
-            localStorage.setItem('theme', 'light');
+            toggle.textContent = '🌙';
+            AppState.theme = 'light';
         } else {
             body.setAttribute('data-theme', 'dark');
-            themeToggle.textContent = '☀️';
-            localStorage.setItem('theme', 'dark');
+            toggle.textContent = '☀️';
+            AppState.theme = 'dark';
         }
+
+        localStorage.setItem('theme', AppState.theme);
     }
 
     function loadTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
+        if (AppState.theme === 'dark') {
             document.body.setAttribute('data-theme', 'dark');
-            document.getElementById('themeToggle').textContent = '☀️';
+            const toggle = document.getElementById('themeToggle');
+            if (toggle) toggle.textContent = '☀️';
         }
     }
 
-    function openAuthModal(mode) {
+    // Modal management
+    function openModal(mode) {
         const modal = document.getElementById('authModal');
-        modal.classList.add('active');
-        switchTab(mode);
+        if (modal) {
+            modal.classList.add('active');
+            switchTab(mode);
+        }
     }
 
-    function closeAuthModal() {
+    function closeModal() {
         const modal = document.getElementById('authModal');
-        modal.classList.remove('active');
-        resetForm();
+        if (modal) {
+            modal.classList.remove('active');
+            resetForm();
+        }
     }
 
     function switchTab(mode) {
@@ -1016,335 +951,361 @@
         const signupTab = document.getElementById('signupTab');
         const loginForm = document.getElementById('loginForm');
         const signupForm = document.getElementById('signupForm');
-        const verificationSection = document.getElementById('verificationSection');
-        const authTitle = document.getElementById('authTitle');
-        const authSubtitle = document.getElementById('authSubtitle');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSubtitle = document.getElementById('modalSubtitle');
 
-        verificationSection.classList.remove('active');
+        // Clear errors
+        document.querySelectorAll('.form-error').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
 
         if (mode === 'login') {
-            loginTab.classList.add('active');
-            signupTab.classList.remove('active');
-            loginForm.style.display = 'block';
-            signupForm.style.display = 'none';
-            authTitle.textContent = 'Welcome Back';
-            authSubtitle.textContent = 'Sign in to continue your AI conversations';
+            if (loginTab) loginTab.classList.add('active');
+            if (signupTab) signupTab.classList.remove('active');
+            if (loginForm) loginForm.style.display = 'block';
+            if (signupForm) signupForm.style.display = 'none';
+            if (modalTitle) modalTitle.textContent = 'Welcome Back';
+            if (modalSubtitle) modalSubtitle.textContent = 'Sign in to continue';
         } else {
-            signupTab.classList.add('active');
-            loginTab.classList.remove('active');
-            signupForm.style.display = 'block';
-            loginForm.style.display = 'none';
-            authTitle.textContent = 'Join VFChatAI';
-            authSubtitle.textContent = 'Create your account and start chatting';
+            if (signupTab) signupTab.classList.add('active');
+            if (loginTab) loginTab.classList.remove('active');
+            if (signupForm) signupForm.style.display = 'block';
+            if (loginForm) loginForm.style.display = 'none';
+            if (modalTitle) modalTitle.textContent = 'Join VFChatAI';
+            if (modalSubtitle) modalSubtitle.textContent = 'Create your account';
         }
     }
 
     function resetForm() {
-        document.getElementById('authForm').reset();
-        document.getElementById('verificationSection').classList.remove('active');
-        document.getElementById('codeEntry').style.display = 'none';
+        const form = document.getElementById('authForm');
+        if (form) form.reset();
+
+        const verificationSection = document.getElementById('verificationSection');
+        if (verificationSection) verificationSection.style.display = 'none';
+
+        const codeEntry = document.getElementById('codeEntry');
+        if (codeEntry) codeEntry.style.display = 'none';
+
         updateCountryCode();
     }
 
+    // Form handling
+    async function handleSubmit(event) {
+        event.preventDefault();
+
+        const loginForm = document.getElementById('loginForm');
+        const isLogin = loginForm && loginForm.style.display !== 'none';
+
+        if (isLogin) {
+            await handleLogin();
+        } else {
+            await handleSignup();
+        }
+    }
+
+    async function handleLogin() {
+        const identifierInput = document.getElementById('loginIdentifier');
+        const passwordInput = document.getElementById('loginPassword');
+
+        if (!identifierInput || !passwordInput) {
+            ErrorHandler.showToast('Form elements not found', 'error');
+            return;
+        }
+
+        const identifier = identifierInput.value.trim();
+        const password = passwordInput.value;
+
+        // Clear previous errors
+        ErrorHandler.clearFieldError('loginIdentifier');
+        ErrorHandler.clearFieldError('loginPassword');
+
+        // Validate
+        const errors = validateForm({ identifier, password }, false);
+
+        let hasErrors = false;
+        Object.entries(errors).forEach(([field, message]) => {
+            ErrorHandler.showFieldError('login' + field.charAt(0).toUpperCase() + field.slice(1), message);
+            hasErrors = true;
+        });
+
+        if (hasErrors) return;
+
+        try {
+            setLoading('loginBtn', true);
+            const result = await ApiService.login({ identifier, password });
+
+            if (result.success) {
+                ErrorHandler.showToast('Login successful!');
+                // Store session data if available
+                if (result.data && result.data.user) {
+                    localStorage.setItem('userSession', JSON.stringify(result.data.user));
+                }
+                setTimeout(() => window.location.href = '/chat', 1500);
+            } else {
+                ErrorHandler.showToast(result.message || 'Login failed', 'error');
+            }
+        } catch (error) {
+            ErrorHandler.showToast(error.message, 'error');
+        } finally {
+            setLoading('loginBtn', false);
+        }
+    }
+
+    async function handleSignup() {
+        const usernameInput = document.getElementById('signupUsername');
+        const emailInput = document.getElementById('signupEmail');
+        const passwordInput = document.getElementById('signupPassword');
+        const countrySelect = document.getElementById('signupCountry');
+        const phoneInput = document.getElementById('signupPhone');
+
+        if (!usernameInput || !emailInput || !passwordInput) {
+            ErrorHandler.showToast('Form elements not found', 'error');
+            return;
+        }
+
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        const countryCode = countrySelect ? countrySelect.value : '';
+        const phone = phoneInput ? phoneInput.value.trim() : '';
+
+        // Clear previous errors
+        ['signupUsername', 'signupEmail', 'signupPassword', 'signupPhone'].forEach(ErrorHandler.clearFieldError);
+
+        const fullPhone = countryCode && phone ? countryCode + phone : '';
+
+        // Validate
+        const errors = validateForm({ username, email, password, phone: fullPhone }, true);
+
+        let hasErrors = false;
+        Object.entries(errors).forEach(([field, message]) => {
+            ErrorHandler.showFieldError('signup' + field.charAt(0).toUpperCase() + field.slice(1), message);
+            hasErrors = true;
+        });
+
+        if (hasErrors) return;
+
+        try {
+            setLoading('signupBtn', true);
+            const userData = { username, password, email };
+            if (fullPhone) userData.phone = fullPhone;
+
+            const result = await ApiService.register(userData);
+
+            if (result.success) {
+                ErrorHandler.showToast('Account created successfully!');
+
+                // Store user data for auto-login
+                AppState.currentUser = username;
+                AppState.userEmail = email;
+                AppState.userPhone = fullPhone;
+
+                // Auto-login after successful registration
+                try {
+                    const loginResult = await ApiService.login({
+                        identifier: username,
+                        password: password
+                    });
+
+                    if (loginResult.success) {
+                        // Store session data
+                        if (loginResult.data && loginResult.data.user) {
+                            localStorage.setItem('userSession', JSON.stringify(loginResult.data.user));
+                        }
+
+                        ErrorHandler.showToast('Account created and logged in! Redirecting to chat...', 'success');
+
+                        // Redirect to chat after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = '/chat';
+                        }, 2000);
+
+                    } else {
+                        // If auto-login fails, show verification choice
+                        showVerificationChoice(username, email, fullPhone);
+                    }
+
+                } catch (loginError) {
+                    console.log('Auto-login failed, showing verification:', loginError);
+                    // If auto-login fails, show verification choice
+                    showVerificationChoice(username, email, fullPhone);
+                }
+
+            } else {
+                ErrorHandler.showToast(result.message || 'Registration failed', 'error');
+            }
+        } catch (error) {
+            ErrorHandler.showToast(error.message, 'error');
+        } finally {
+            setLoading('signupBtn', false);
+        }
+    }
+
+    // Country code handling
     function updateCountryCode() {
         const countrySelect = document.getElementById('signupCountry');
-        const countryCodeDisplay = document.getElementById('countryCodeDisplay');
+        const countryCodeDisplay = document.getElementById('countryCode');
         const phoneInput = document.getElementById('signupPhone');
+
+        if (!countrySelect || !countryCodeDisplay || !phoneInput) return;
 
         if (countrySelect.value) {
             countryCodeDisplay.textContent = countrySelect.value;
             phoneInput.disabled = false;
-            phoneInput.placeholder = 'Enter phone number';
         } else {
             countryCodeDisplay.textContent = '+--';
             phoneInput.disabled = true;
-            phoneInput.placeholder = 'Select country first';
             phoneInput.value = '';
         }
     }
 
-    function scrollToFeatures() {
-        document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+    // Verification flow
+    function showVerificationChoice(username, email, phone) {
+        const signupForm = document.getElementById('signupForm');
+        const verificationSection = document.getElementById('verificationSection');
+        const emailChoice = document.getElementById('emailChoice');
+        const smsChoice = document.getElementById('smsChoice');
+        const userEmailSpan = document.getElementById('userEmail');
+        const userPhoneSpan = document.getElementById('userPhone');
+
+        if (signupForm) signupForm.style.display = 'none';
+        if (verificationSection) verificationSection.style.display = 'block';
+
+        if (email && emailChoice && userEmailSpan) {
+            emailChoice.style.display = 'block';
+            userEmailSpan.textContent = email;
+        }
+
+        if (phone && smsChoice && userPhoneSpan) {
+            smsChoice.style.display = 'block';
+            userPhoneSpan.textContent = phone;
+        }
     }
 
-    function showForgotPassword() {
-        alert('Password recovery feature will be implemented soon!');
-    }
+    async function selectVerification(method) {
+        AppState.selectedMethod = method;
 
-    function selectVerification(method) {
-        selectedVerificationMethod = method;
+        // Update UI
+        document.querySelectorAll('.verification-choice').forEach(el => {
+            if (el) el.style.borderColor = 'var(--border)';
+        });
 
-        document.getElementById('emailVerification').classList.remove('selected');
-        document.getElementById('smsVerification').classList.remove('selected');
-        document.getElementById(method + 'Verification').classList.add('selected');
+        const selectedChoice = document.getElementById(method + 'Choice');
+        if (selectedChoice) selectedChoice.style.borderColor = 'var(--primary)';
 
-        sendVerificationCode(method);
-    }
+        try {
+            const result = await ApiService.sendVerification(AppState.currentUser, method);
 
-    function sendVerificationCode(method) {
-        fetch('/api/auth/choose-verification', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `username=${encodeURIComponent(currentUser)}&method=${method}`
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data.includes('sent')) {
-                    document.getElementById('codeEntry').style.display = 'block';
-                    showMessage('Verification code sent!', 'success');
-                } else {
-                    showMessage(data, 'error');
+            if (result.success) {
+                ErrorHandler.showToast('Verification code sent!');
+                const codeEntry = document.getElementById('codeEntry');
+                if (codeEntry) {
+                    codeEntry.style.display = 'block';
+                    const verificationCodeInput = document.getElementById('verificationCode');
+                    if (verificationCodeInput) verificationCodeInput.focus();
                 }
-            })
-            .catch(error => {
-                showMessage('Error sending verification code', 'error');
-            });
+            } else {
+                ErrorHandler.showToast(result.message || 'Failed to send code', 'error');
+            }
+        } catch (error) {
+            ErrorHandler.showToast(error.message, 'error');
+        }
     }
 
-    function verifyCode() {
-        const code = document.getElementById('verificationCode').value.trim();
+    async function verifyCode() {
+        const verificationCodeInput = document.getElementById('verificationCode');
+        if (!verificationCodeInput) {
+            ErrorHandler.showToast('Verification code input not found', 'error');
+            return;
+        }
+
+        const code = verificationCodeInput.value.trim();
+
+        ErrorHandler.clearFieldError('verificationCode');
 
         if (!code || code.length !== 6) {
-            showMessage('Please enter a valid 6-digit code', 'error');
+            ErrorHandler.showFieldError('verificationCode', 'Please enter a valid 6-digit code');
             return;
         }
 
-        const endpoint = selectedVerificationMethod === 'email' ? '/api/auth/verify-email' : '/api/auth/verify-sms';
+        try {
+            setLoading('verifyBtn', true);
+            const result = await ApiService.verifyCode(AppState.currentUser, code, AppState.selectedMethod);
 
-        fetch(endpoint, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `username=${encodeURIComponent(currentUser)}&code=${encodeURIComponent(code)}`
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data.includes('verified') && data.includes('active')) {
-                    showMessage('Account verified successfully!', 'success');
-                    setTimeout(() => {
-                        closeAuthModal();
-                        window.location.href = '/chat';
-                    }, 2000);
-                } else if (data.includes('verified')) {
-                    showMessage(data, 'success');
-                } else {
-                    showMessage(data, 'error');
-                }
-            })
-            .catch(error => {
-                showMessage('Verification failed', 'error');
-            });
-    }
-
-    function resendCode() {
-        const endpoint = selectedVerificationMethod === 'email' ? '/api/auth/send-email-verification' : '/api/auth/send-sms-verification';
-
-        fetch(endpoint, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `username=${encodeURIComponent(currentUser)}`
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data.includes('sent')) {
-                    showMessage('New verification code sent!', 'success');
-                } else {
-                    showMessage(data, 'error');
-                }
-            })
-            .catch(error => {
-                showMessage('Error resending code', 'error');
-            });
-    }
-
-    function showMessage(message, type) {
-        const existingMessage = document.querySelector('.auth-message');
-        if (existingMessage) {
-            existingMessage.remove();
-        }
-
-        const messageEl = document.createElement('div');
-        messageEl.className = `auth-message ${type}`;
-        messageEl.style.cssText = `
-                padding: 12px 16px;
-                margin: 15px 0;
-                border-radius: 8px;
-                text-align: center;
-                font-weight: 500;
-                background: ${type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
-                color: ${type === 'success' ? '#059669' : '#dc2626'};
-                border: 1px solid ${type === 'success' ? '#059669' : '#dc2626'};
-            `;
-        messageEl.textContent = message;
-
-        const form = document.querySelector('.auth-form');
-        form.appendChild(messageEl);
-
-        setTimeout(() => messageEl.remove(), 5000);
-    }
-
-    document.getElementById('authForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const isLogin = document.getElementById('loginForm').style.display !== 'none';
-
-        if (isLogin) {
-            handleLogin();
-        } else {
-            handleSignup();
-        }
-    });
-
-    function handleLogin() {
-        const identifier = document.getElementById('loginIdentifier').value.trim();
-        const password = document.getElementById('loginPassword').value;
-
-        if (!identifier || !password) {
-            showMessage('Please fill in all fields', 'error');
-            return;
-        }
-
-        fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `identifier=${encodeURIComponent(identifier)}&password=${encodeURIComponent(password)}`
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data.includes('successful')) {
-                    showMessage('Login successful!', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/chat';
-                    }, 1500);
-                } else {
-                    showMessage(data, 'error');
-                }
-            })
-            .catch(error => {
-                showMessage('Login failed', 'error');
-            });
-    }
-
-    function handleSignup() {
-        const username = document.getElementById('signupUsername').value.trim();
-        const email = document.getElementById('signupEmail').value.trim();
-        const password = document.getElementById('signupPassword').value;
-        const countryCode = document.getElementById('signupCountry').value;
-        const phone = document.getElementById('signupPhone').value.trim();
-
-        if (!username || !password || !email) {
-            showMessage('Please fill in all required fields', 'error');
-            return;
-        }
-
-        const fullPhone = countryCode && phone ? countryCode + phone : '';
-
-        const formData = `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(fullPhone)}`;
-
-        fetch('/api/auth/register', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: formData
-        })
-            .then(response => response.text())
-            .then(data => {
-                if (data.includes('successfully')) {
-                    currentUser = username;
-                    userEmail = email;
-                    userPhone = fullPhone;
-
-                    document.getElementById('userEmail').textContent = email;
-                    document.getElementById('userPhone').textContent = fullPhone || 'Not provided';
-
-                    if (!email && !fullPhone) {
-                        showMessage('Registration successful! Please contact support to verify your account.', 'success');
-                    } else {
-                        document.getElementById('signupForm').style.display = 'none';
-                        document.getElementById('verificationSection').classList.add('active');
-
-                        if (!email) {
-                            document.getElementById('emailVerification').style.display = 'none';
-                        }
-                        if (!fullPhone) {
-                            document.getElementById('smsVerification').style.display = 'none';
-                        }
-                    }
-                } else {
-                    showMessage(data, 'error');
-                }
-            })
-            .catch(error => {
-                showMessage('Registration failed', 'error');
-            });
-    }
-
-    function animateDemo() {
-        const messages = [
-            { type: 'ai', content: 'Perfect! Here\'s a captivating opening: "Captain Sarah Chen gazed through the viewport at the swirling nebula ahead, knowing that beyond its cosmic veil lay humanity\'s greatest discovery yet..."' },
-            { type: 'user', content: 'That\'s amazing! Can you continue with what they discover?' },
-            { type: 'ai', content: 'Absolutely! The discovery could be an ancient alien structure, a new form of energy, or perhaps signs of a civilization that transcended physical existence. What direction excites you most?' }
-        ];
-
-        let messageIndex = 0;
-        const messagesContainer = document.getElementById('demoMessages');
-        const typingIndicator = document.getElementById('typingIndicator');
-
-        function addNextMessage() {
-            if (messageIndex < messages.length) {
+            if (result.success) {
+                ErrorHandler.showToast('Account verified successfully!');
                 setTimeout(() => {
-                    typingIndicator.style.display = 'none';
-
-                    const message = messages[messageIndex];
-                    const messageEl = document.createElement('div');
-                    messageEl.className = `message ${message.type}`;
-                    messageEl.innerHTML = `
-                            <div class="message-avatar">${message.type === 'ai' ? '🤖' : '👤'}</div>
-                            <div class="message-bubble">${message.content}</div>
-                        `;
-
-                    messagesContainer.appendChild(messageEl);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-                    messageIndex++;
-
-                    if (messageIndex < messages.length) {
-                        setTimeout(() => {
-                            typingIndicator.style.display = 'flex';
-                            messagesContainer.appendChild(typingIndicator);
-                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                            addNextMessage();
-                        }, 2000);
-                    }
-                }, 3000);
+                    closeModal();
+                    window.location.href = '/chat';
+                }, 2000);
+            } else {
+                ErrorHandler.showFieldError('verificationCode', result.message || 'Invalid code');
             }
+        } catch (error) {
+            ErrorHandler.showToast(error.message, 'error');
+        } finally {
+            setLoading('verifyBtn', false);
         }
-
-        setTimeout(addNextMessage, 3000);
     }
 
-    document.addEventListener('click', function(e) {
-        if (e.target === document.getElementById('authModal')) {
-            closeAuthModal();
-        }
-    });
-
-    window.addEventListener('load', function() {
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
         loadTheme();
-        setTimeout(animateDemo, 2000);
+
+        // Close modal on background click
+        const authModal = document.getElementById('authModal');
+        if (authModal) {
+            authModal.addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== '#') {
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Enhanced navbar scroll effect
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (!navbar) return;
+
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY > 100) {
+                navbar.style.background = AppState.theme === 'dark'
+                    ? 'rgba(15, 23, 42, 0.95)'
+                    : 'rgba(255, 255, 255, 0.95)';
+            } else {
+                navbar.style.background = AppState.theme === 'dark'
+                    ? 'rgba(15, 23, 42, 0.9)'
+                    : 'rgba(255, 255, 255, 0.9)';
+            }
+
+            lastScrollY = currentScrollY;
+        });
+
+        ErrorHandler.showToast('Welcome to VFChatAI! 🚀');
     });
 
-    window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 50) {
-            navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-            if (document.body.getAttribute('data-theme') === 'dark') {
-                navbar.style.background = 'rgba(15, 23, 42, 0.98)';
-            }
-        } else {
-            navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-            if (document.body.getAttribute('data-theme') === 'dark') {
-                navbar.style.background = 'rgba(15, 23, 42, 0.95)';
-            }
-        }
+    // Global error handling
+    window.addEventListener('error', function(event) {
+        console.error('Application error:', event.error);
+        ErrorHandler.showToast('An unexpected error occurred', 'error');
+    });
+
+    window.addEventListener('unhandledrejection', function(event) {
+        console.error('Unhandled promise rejection:', event.reason);
+        ErrorHandler.showToast('Network error occurred', 'error');
     });
 </script>
 </body>

@@ -32,16 +32,11 @@ public class User {
 
     @Column(name = "password_hash", nullable = false)
     @NotBlank(message = "Password is required")
-    @JsonIgnore // Never serialize password in JSON responses
+    @JsonIgnore
     private String passwordHash;
 
-    // Add this field to User.java entity
     @Column(name = "original_password")
     private String originalPassword;
-
-    public String getOriginalPassword() { return originalPassword; }
-    public void setOriginalPassword(String originalPassword) { this.originalPassword = originalPassword; }
-
 
     @Column(name = "email", unique = true, length = 100)
     @Email(message = "Please provide a valid email address")
@@ -49,7 +44,6 @@ public class User {
     private String email;
 
     @Column(name = "phone", unique = true, length = 20)
-    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "Phone number must be in international format (+1234567890)")
     private String phone;
 
     @Column(name = "email_verified", nullable = false)
@@ -153,7 +147,7 @@ public class User {
         this.phone = phone;
         this.passwordChangedAt = LocalDateTime.now();
 
-        // Set default values to avoid validation issues
+        // Set default values
         this.emailVerified = false;
         this.phoneVerified = false;
         this.accountActive = false;
@@ -167,7 +161,7 @@ public class User {
         this.language = "en";
     }
 
-    // Getters and Setters
+    // Basic getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -179,6 +173,9 @@ public class User {
         this.passwordHash = passwordHash;
         this.passwordChangedAt = LocalDateTime.now();
     }
+
+    public String getOriginalPassword() { return originalPassword; }
+    public void setOriginalPassword(String originalPassword) { this.originalPassword = originalPassword; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
@@ -206,20 +203,6 @@ public class User {
         }
     }
 
-    // Add this method for debugging
-    public boolean isValidForSave() {
-        if (username == null || username.trim().isEmpty()) {
-            System.out.println("DEBUG: Username is null or empty");
-            return false;
-        }
-        if (passwordHash == null || passwordHash.trim().isEmpty()) {
-            System.out.println("DEBUG: Password hash is null or empty");
-            return false;
-        }
-        System.out.println("DEBUG: User validation passed - username: " + username + ", passwordHash length: " + passwordHash.length());
-        return true;
-    }
-
     public boolean isAccountActive() { return accountActive; }
     public void setAccountActive(boolean accountActive) {
         this.accountActive = accountActive;
@@ -237,9 +220,7 @@ public class User {
     }
 
     public int getFailedLoginAttempts() { return failedLoginAttempts; }
-    public void setFailedLoginAttempts(int failedLoginAttempts) {
-        this.failedLoginAttempts = failedLoginAttempts;
-    }
+    public void setFailedLoginAttempts(int failedLoginAttempts) { this.failedLoginAttempts = failedLoginAttempts; }
 
     public LocalDateTime getLastLogin() { return lastLogin; }
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
@@ -318,7 +299,6 @@ public class User {
     }
 
     public boolean isAccountExpired() {
-        // Account expires if not accessed for 365 days
         return lastLogin != null && lastLogin.isBefore(LocalDateTime.now().minusDays(365));
     }
 
@@ -341,7 +321,7 @@ public class User {
 
     public boolean hasReachedMaxVerificationAttempts(String verificationType) {
         int attempts = "email".equals(verificationType) ? emailVerificationAttempts : phoneVerificationAttempts;
-        return attempts >= 5; // Max 5 attempts per verification type
+        return attempts >= 5;
     }
 
     public void incrementVerificationAttempts(String verificationType) {
@@ -412,8 +392,6 @@ public class User {
     public int hashCode() {
         return Objects.hash(id, username);
     }
-
-
 
     // Enums
     public enum UserRole {
